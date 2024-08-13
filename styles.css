@@ -1,0 +1,312 @@
+body {
+    background: url('path-to-your-background-image.png') no-repeat center center fixed;
+    background-size: cover;
+}
+
+.search-bar {
+    width: 60%;
+    animation: fadeIn 1.5s ease-in-out;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: top 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55), transform 0.7s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    margin-bottom: 20px;
+}
+
+.search-bar.move-up {
+    top: 20%;
+}
+
+.search-bar input {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: none;
+    color: white;
+    padding: 20px;
+    font-size: 1.5em;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+.search-bar input:focus {
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.5);
+    outline: none;
+}
+
+.search-bar input::placeholder {
+    color: #bbb;
+}
+
+.results-container {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    max-height: 200px;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.results-container.show {
+    display: block;
+    opacity: 1;
+}
+
+.results-container.fade-in {
+    animation: fadeInResults 0.5s ease-in-out forwards;
+}
+
+.results-container.fade-out {
+    animation: fadeOutResults 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeInResults {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutResults {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+}
+
+.result-item {
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.result-item:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.table-container {
+    width: 80%;
+    display: none;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    max-height: 400px; /* Adjusted for a smaller table */
+    overflow-y: auto;
+    border-radius: 15px; /* Rounded edges */
+    margin-top: 20px;
+    margin-bottom: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.19); /* Adding shadow */
+}
+
+.table-container.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.table-container.fade-in {
+    animation: fadeInTable 0.5s ease-in-out forwards;
+}
+
+.table-container.fade-out {
+    animation: fadeOutTable 0.5s ease-in-out forwards;
+}
+
+@keyframes fadeInTable {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeOutTable {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+}
+
+.table-responsive {
+    max-height: 400px; /* Adjusted for a smaller table */
+    overflow-y: auto;
+}
+
+.table-dark th, .table-dark td {
+    text-align: center; /* Center-align text in columns */
+}
+
+.table-dark th:nth-child(1), .table-dark td:nth-child(1) {
+    white-space: nowrap; /* Ensure text fits in one line */
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+.result-boxes {
+    position: fixed;
+    bottom: 20px;
+    width: 80%;
+    display: none;
+    justify-content: space-around;
+    align-items: center; /* Center-align items */
+}
+
+.result-box {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 20px;
+    border-radius: 30px; /* Increased border radius */
+    width: 30%;
+    text-align: center;
+    animation: fadeIn 1.5s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.19); /* Adding box shadow */
+    cursor: default;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.result-box p {
+    margin: 0;
+    font-size: 1.2em;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.result-box ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+    text-align: left;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.result-box li {
+    margin-bottom: 5px;
+}
+
+#optionalToggle {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#optionalToggle:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+#toggleTableButton, #togglePenaltyButton {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px; /* Set border radius */
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    font-size: 1em;
+    margin-top: 10px; /* Added margin for spacing between button and text */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Adding button shadow */
+}
+
+#toggleTableButton:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5); /* Tiny glow effect */
+}
+
+.table-dark .selected {
+    background: linear-gradient(90deg, #536976, #4d5168) !important;
+}
+
+.selected-rows-table-container {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, 100%);
+    background-color: rgba(0, 0, 0, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    z-index: 1000;
+    transition: transform 0.5s ease-in-out;
+}
+
+.selected-rows-table-container.show {
+    transform: translate(-50%, -50%);
+}
+
+.selected-rows-table-container .table-responsive {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.deleting {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
+
+/* Button styles */
+.section-btn, .description-btn {
+    background-color: #6d7176;
+    border: none;
+    color: white;
+    padding: 5px 10px; /* Adjusted padding */
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.section-btn:hover, .description-btn:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.result-box.fade-out {
+    animation: fadeOut 1.5s ease-in-out forwards;
+}
+
+#optionalPenaltyBox.white-shadow {
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}

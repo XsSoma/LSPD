@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penal Code Calculator</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container-fluid vh-100 d-flex flex-column justify-content-center align-items-center bg-dark">
+        <div class="search-bar mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Keresés..." onfocus="showTable()" oninput="filterTable()">
+            <div id="resultsContainer" class="results-container"></div>
+        </div>
+        <div id="searchTable" class="table-container">
+            <div class="table-responsive">
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th>§</th>
+                            <th>Megnevezés</th>
+                            <th>Leírás</th>
+                            <th>Bírság</th>
+                            <th>Letöltendő</th>
+                            <th>Code</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="result-boxes" id="resultBoxes">
+            <div class="result-box" id="optionalPenaltyBox">
+                <p>Opciónális letöltendő: <span id="optionalPenalty">0-0 perc</span></p>
+            </div>
+            <div class="result-box" id="fineBox">
+                <p>Összes bírság: <span id="totalFine">$0</span></p>
+                <button id="toggleTableButton" onclick="toggleSelectedRowsTable()">Show Selected Rows</button>
+            </div>
+            <div class="result-box" id="penaltyBox">
+                <p>Összes letöltendő: <span id="totalPenalty">0-0 perc</span></p>
+            </div>
+        </div>
+        <div id="selectedRowsTableContainer" class="selected-rows-table-container">
+            <div class="table-responsive">
+                <table class="table table-dark table-striped" id="selectedRowsTable">
+                    <thead>
+                        <tr>
+                            <th>§</th>
+                            <th>Megnevezés</th>
+                            <th>Leírás</th>
+                            <th>Bírság</th>
+                            <th>Letöltendő</th>
+                            <th>Code</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="selectedRowsTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
