@@ -328,72 +328,129 @@ const penalCodeData = [
     { "id": "327", "button_text": "1842004.5", "offense_description": "Megjelenés elmulasztása.", "penalty_description": "Bárminemű jogszabálysértés elítélése esetén, kivéve a bűncselekményekkel kapcsolatos eseteket és ezt a szakaszt, a megyei börtönbüntetés végrehajtását a vádlott kérésére 24 órára felfüggeszthetik, ha a bíró nem állapítja meg, hogy a személy nem fog visszatérni. Ha az említett időszak vége előtt a személy nem adja át magát az őrizetbe vétel céljából, akkor a megjelenés elmulasztása bűncselekménynek minősül.", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "5-5", "code_reference": "18(42004.5)" }
 ];
 
-function generateTableRow(item) {
-    const tr = document.createElement('tr');
-    const sectionButton = document.createElement('button');
-    sectionButton.className = 'section-btn';
-    sectionButton.textContent = item.button_text;
-    sectionButton.onclick = () => selectRowFromButton(sectionButton);
+let selectedRows = [];
+let includeOptional = true;
+let searchBarClicked = false;
 
-    const sectionTd = document.createElement('td');
-    sectionTd.appendChild(sectionButton);
+document.addEventListener('DOMContentLoaded', function () {
+    loadTableData();
+});
 
-    const offenseTd = document.createElement('td');
-    offenseTd.textContent = item.offense_description;
-
-    const penaltyTd = document.createElement('td');
-    if (item.penalty_description.length > 150) {
-        const penaltyButton = document.createElement('button');
-        penaltyButton.className = 'description-btn';
-        penaltyButton.onclick = () => toggleDescription(penaltyButton);
-
-        const shortText = document.createElement('span');
-        shortText.className = 'short-text';
-        shortText.textContent = item.penalty_description.substring(0, 150) + '...';
-
-        const fullText = document.createElement('span');
-        fullText.className = 'full-text';
-        fullText.style.display = 'none';
-        fullText.textContent = item.penalty_description;
-
-        penaltyButton.appendChild(shortText);
-        penaltyButton.appendChild(fullText);
-        penaltyTd.appendChild(penaltyButton);
-    } else {
-        penaltyTd.textContent = item.penalty_description;
-    }
-
-    const fineTd = document.createElement('td');
-    fineTd.textContent = item.fine_range;
-
-    const jailTd = document.createElement('td');
-    jailTd.textContent = item.jail_time_range;
-
-    const codeTd = document.createElement('td');
-    codeTd.textContent = item.code_reference;
-
-    tr.appendChild(sectionTd);
-    tr.appendChild(offenseTd);
-    tr.appendChild(penaltyTd);
-    tr.appendChild(fineTd);
-    tr.appendChild(jailTd);
-    tr.appendChild(codeTd);
-
-    return tr;
-}
-
-function populateTable() {
+function loadTableData() {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
-    penalCodeData.forEach(item => {
-        const row = generateTableRow(item);
+
+    data.forEach(item => {
+        const row = document.createElement('tr');
+
+        const cellButtonText = document.createElement('td');
+        const button = document.createElement('button');
+        button.className = 'section-btn';
+        button.textContent = item.button_text;
+        button.onclick = function () {
+            selectRowFromButton(button);
+        };
+        cellButtonText.appendChild(button);
+        row.appendChild(cellButtonText);
+
+        const cellOffenseDescription = document.createElement('td');
+        cellOffenseDescription.textContent = item.offense_description;
+        row.appendChild(cellOffenseDescription);
+
+        const cellPenaltyDescription = document.createElement('td');
+        if (item.penalty_description.length > 150) {
+            const penaltyButton = document.createElement('button');
+            penaltyButton.className = 'description-btn';
+            penaltyButton.onclick = function () {
+                toggleDescription(penaltyButton);
+            };
+
+            const shortText = document.createElement('span');
+            shortText.className = 'short-text';
+            shortText.textContent = item.penalty_description.substring(0, 150) + '...';
+
+            const fullText = document.createElement('span');
+            fullText.className = 'full-text';
+            fullText.style.display = 'none';
+            fullText.textContent = item.penalty_description;
+
+            penaltyButton.appendChild(shortText);
+            penaltyButton.appendChild(fullText);
+            cellPenaltyDescription.appendChild(penaltyButton);
+        } else {
+            cellPenaltyDescription.textContent = item.penalty_description;
+        }
+        row.appendChild(cellPenaltyDescription);
+
+        const cellFineRange = document.createElement('td');
+        cellFineRange.textContent = item.fine_range;
+        row.appendChild(cellFineRange);
+
+        const cellJailTimeRange = document.createElement('td');
+        cellJailTimeRange.textContent = item.jail_time_range;
+        row.appendChild(cellJailTimeRange);
+
+        const cellCodeReference = document.createElement('td');
+        cellCodeReference.textContent = item.code_reference;
+        row.appendChild(cellCodeReference);
+
         tableBody.appendChild(row);
     });
 }
 
-function selectRowFromButton(button) {
-    const row = button.closest('tr');
-    selectRow(row);
+function showTable() {
+    document.getElementById('resultsContainer').style.display = 'block';
+    setTimeout(() => {
+        document.getElementById('resultsContainer').classList.add('fade-in');
+    }, 10);
+    document.querySelector('.search-bar').classList.add('move-up');
+    updateResultsContainer();
+
+    if (!searchBarClicked) {
+        setTimeout(() => {
+            searchBarClicked = true;
+            document.addEventListener('click', handleOutsideClick);
+        }, 700); // Delay to match the animation duration of the search bar
+    }
+}
+
+function hideTable() {
+    const searchInput = document.getElementById('searchInput').value.trim();
+    if (!searchInput) {
+        document.getElementById('resultsContainer').classList.add('fade-out');
+        setTimeout(() => {
+            document.getElementById('resultsContainer').classList.remove('show');
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('resultsContainer').classList.remove('fade-out');
+        }, 500);
+    }
+}
+
+function filterTable() {
+    const input = document.getElementById('searchInput').value.toLowerCase();
+    const resultsContainer = document.getElementById('resultsContainer');
+
+    resultsContainer.innerHTML = '';
+    let found = false;
+
+    data.forEach(item => {
+        if (item.offense_description.toLowerCase().includes(input) || item.penalty_description.toLowerCase().includes(input)) {
+            found = true;
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            resultItem.innerText = `${item.code_reference} - ${item.offense_description}`;
+            resultItem.onclick = () => selectRowFromDatabase(item);
+            resultsContainer.appendChild(resultItem);
+        }
+    });
+
+    if (input && found) {
+        resultsContainer.style.display = 'block';
+        resultsContainer.classList.add('fade-in');
+    } else {
+        resultsContainer.style.display = 'none';
+        resultsContainer.classList.remove('fade-in');
+    }
 }
 
 function selectRow(row) {
@@ -407,16 +464,23 @@ function selectRow(row) {
     updateResultBoxes();
 }
 
-function toggleDescription(button) {
-    const shortText = button.querySelector('.short-text');
-    const fullText = button.querySelector('.full-text');
-    if (fullText.style.display === 'none') {
-        shortText.style.display = 'none';
-        fullText.style.display = 'block';
-    } else {
-        shortText.style.display = 'block';
-        fullText.style.display = 'none';
-    }
+function selectRowFromButton(button) {
+    const row = button.closest('tr');
+    selectRow(row);
+}
+
+function selectRowFromDatabase(item) {
+    const rows = document.querySelectorAll('#tableBody tr');
+    rows.forEach(row => {
+        if (row.cells[0].textContent.trim() === item.button_text) {
+            selectRow(row);
+        }
+    });
+}
+
+function toggleOptional() {
+    includeOptional = !includeOptional;
+    updateResultBoxes();
 }
 
 function updateResultBoxes() {
@@ -435,7 +499,7 @@ function updateResultBoxes() {
             setTimeout(() => {
                 box.style.display = 'none';
                 box.classList.remove('fade-out');
-            }, 1500); 
+            }, 1500); // Match the fade-out animation duration
         });
         return;
     }
@@ -452,9 +516,7 @@ function updateResultBoxes() {
         totalPenaltyMin += penaltyRange[0];
         totalPenaltyMax += penaltyRange[1];
 
-        
-        const category = penalCodeData.find(item => item.code_reference === cells[5].innerText)?.category;
-        if (category !== 'I') {
+        if (cells[2].innerText !== 'I') {
             optionalPenaltyMin += penaltyRange[0];
             optionalPenaltyMax += penaltyRange[1];
         } else {
@@ -488,83 +550,17 @@ function updateResultBoxes() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', populateTable);
-
-let selectedRows = [];
-let searchBarClicked = false;
-
-function showTable() {
-    document.getElementById('resultsContainer').style.display = 'block';
-    setTimeout(() => {
-        document.getElementById('resultsContainer').classList.add('fade-in');
-    }, 10);
-    document.querySelector('.search-bar').classList.add('move-up');
-    updateResultsContainer();
-
-    if (!searchBarClicked) {
-        setTimeout(() => {
-            searchBarClicked = true;
-            document.addEventListener('click', handleOutsideClick);
-        }, 700); 
-    }
-}
-
-function hideTable() {
-    const searchInput = document.getElementById('searchInput').value.trim();
-    if (!searchInput) {
-        document.getElementById('resultsContainer').classList.add('fade-out');
-        setTimeout(() => {
-            document.getElementById('resultsContainer').classList.remove('show');
-            document.getElementById('resultsContainer').style.display = 'none';
-            document.getElementById('resultsContainer').classList.remove('fade-out');
-        }, 500);
-    }
-}
-
-function filterTable() {
-    const input = document.getElementById('searchInput').value.toLowerCase();
-    const tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
-    const resultsContainer = document.getElementById('resultsContainer');
-
-    resultsContainer.innerHTML = '';
-    let found = false;
-
-    for (let row of tableRows) {
-        const megnevezes = row.getElementsByTagName('td')[1].innerText.toLowerCase();
-        const leiras = row.getElementsByTagName('td')[2].innerText.toLowerCase();
-        if (megnevezes.includes(input) || leiras.includes(input)) {
-            found = true;
-            const cells = row.getElementsByTagName('td');
-            const resultItem = document.createElement('div');
-            resultItem.className = 'result-item';
-            resultItem.innerText = `${cells[5].innerText} - ${cells[1].innerText}`;
-            resultItem.onclick = () => selectRow(row);
-            resultsContainer.appendChild(resultItem);
-        }
-    }
-
-    if (input && found) {
-        resultsContainer.style.display = 'block';
-        resultsContainer.classList.add('fade-in');
-    } else {
-        resultsContainer.style.display = 'none';
-        resultsContainer.classList.remove('fade-in');
-    }
-}
-
 function updateResultsContainer() {
     const resultsContainer = document.getElementById('resultsContainer');
-    const tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
     resultsContainer.innerHTML = '';
 
-    for (let row of tableRows) {
-        const cells = row.getElementsByTagName('td');
+    data.forEach(item => {
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
-        resultItem.innerText = `${cells[5].innerText} - ${cells[1].innerText}`;
-        resultItem.onclick = () => selectRow(row);
+        resultItem.innerText = `${item.code_reference} - ${item.offense_description}`;
+        resultItem.onclick = () => selectRowFromDatabase(item);
         resultsContainer.appendChild(resultItem);
-    }
+    });
 }
 
 function toggleSelectedRowsTable() {
@@ -593,7 +589,7 @@ function toggleSelectedRowsTable() {
             container.classList.add('show');
             container.classList.add('fade-in');
         }, 10);
-        button.innerText = 'Hide Selected Rows';
+        button.innerText = 'Kijelölt sorok eltüntetése';
     }
 }
 
@@ -616,6 +612,9 @@ function displaySelectedRowsTable() {
         actionCell.appendChild(deleteButton);
         clone.appendChild(actionCell);
 
+        // Remove the button from the § column
+        clone.cells[0].innerHTML = clone.cells[0].textContent;
+
         selectedRowsTableBody.appendChild(clone);
     });
 
@@ -636,7 +635,7 @@ function removeRowFromSelection(index, rowElement) {
             document.getElementById('selectedRowsTableContainer').style.display = 'none';
             document.getElementById('toggleTableButton').innerText = 'Show Selected Rows';
         }
-        originalRow.classList.remove('selected'); 
+        originalRow.classList.remove('selected'); // Remove highlight from the original row in the search table
         displaySelectedRowsTable();
     }, 300);
 }
@@ -648,13 +647,25 @@ function copyToClipboard() {
     });
 }
 
+function toggleDescription(button) {
+    const shortText = button.querySelector('.short-text');
+    const fullText = button.querySelector('.full-text');
+    if (fullText.style.display === 'none') {
+        shortText.style.display = 'none';
+        fullText.style.display = 'block';
+    } else {
+        shortText.style.display = 'block';
+        fullText.style.display = 'none';
+    }
+}
+
 function handleOutsideClick(event) {
     const searchInput = document.getElementById('searchInput');
     const resultsContainer = document.getElementById('resultsContainer');
     const searchTable = document.getElementById('searchTable');
 
     if (!searchInput.contains(event.target) && !resultsContainer.contains(event.target)) {
-        searchInput.value = ''; 
+        searchInput.value = ''; // Clear the search input
         hideTable();
         searchTable.classList.add('fade-in');
         searchTable.classList.add('show');
@@ -666,5 +677,3 @@ function handleOutsideClick(event) {
         }, 500);
     }
 }
-
-document.addEventListener('DOMContentLoaded', populateTable);
