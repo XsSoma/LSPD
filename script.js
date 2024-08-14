@@ -1,3 +1,7 @@
+let selectedRows = [];
+let includeOptional = true;
+let searchBarClicked = false;
+
 const data = [
     { "id": "1", "button_text": "233 §", "offense_description": "Bűncselekményben való asszisztálás", "penalty_description": "Kivéve azokat az eseteket, amikor eltérő büntetést ír elő a törvény, a segítő pénzbírsággal sújtható, amely nem haladhatja meg az ötezer dollárt ($5,000), vagy börtönbüntetéssel az 1170. szakasz (h) bekezdése szerint, vagy megyei börtönben legfeljebb egy évig, vagy mindkét büntetéssel.\t\t", "category": "I", "fine_range": "$5000 - $5000", "jail_time_range": "12-48", "code_reference": "2(33)" },
     { "id": "2", "button_text": "337 §", "offense_description": "Hazaárulás", "penalty_description": "(a) Az állam elleni hazaárulás csak az állam elleni háború indításából, az ellenségeihez való csatlakozásból vagy azok segítéséből és támogatásából áll, és csak az állam iránt hűséggel tartozó személyek által követhető el. A büntetést a 190.3 szakaszszerint kell meghatározni.\t\t", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "240-999", "code_reference": "3(37)" },
@@ -328,71 +332,56 @@ const data = [
     { "id": "327", "button_text": "1842004.5", "offense_description": "Megjelenés elmulasztása.", "penalty_description": "Bárminemű jogszabálysértés elítélése esetén, kivéve a bűncselekményekkel kapcsolatos eseteket és ezt a szakaszt, a megyei börtönbüntetés végrehajtását a vádlott kérésére 24 órára felfüggeszthetik, ha a bíró nem állapítja meg, hogy a személy nem fog visszatérni. Ha az említett időszak vége előtt a személy nem adja át magát az őrizetbe vétel céljából, akkor a megjelenés elmulasztása bűncselekménynek minősül.", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "5-5", "code_reference": "18(42004.5)" }
 ];
 
-let selectedRows = [];
-let includeOptional = true;
-let searchBarClicked = false;
-
-document.addEventListener('DOMContentLoaded', function () {
-    loadTableData();
-});
-
-function loadTableData() {
+function populateTable() {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
 
-    data.forEach(item => {
+    data.forEach(rowData => {
         const row = document.createElement('tr');
 
-        const cellButtonText = document.createElement('td');
+        const buttonCell = document.createElement('td');
         const button = document.createElement('button');
-        button.className = 'section-btn';
-        button.textContent = item.button_text;
-        button.onclick = function () {
-            selectRowFromButton(button);
-        };
-        cellButtonText.appendChild(button);
-        row.appendChild(cellButtonText);
+        button.classList.add('section-btn');
+        button.innerText = rowData.button_text;
+        button.onclick = () => selectRowFromButton(button);
+        buttonCell.appendChild(button);
 
-        const cellOffenseDescription = document.createElement('td');
-        cellOffenseDescription.textContent = item.offense_description;
-        row.appendChild(cellOffenseDescription);
+        const offenseCell = document.createElement('td');
+        offenseCell.innerText = rowData.offense_description;
 
-        const cellPenaltyDescription = document.createElement('td');
-        if (item.penalty_description.length > 150) {
+        const penaltyCell = document.createElement('td');
+        if (rowData.penalty_description.length > 150) {
             const penaltyButton = document.createElement('button');
-            penaltyButton.className = 'description-btn';
-            penaltyButton.onclick = function () {
-                toggleDescription(penaltyButton);
-            };
-
-            const shortText = document.createElement('span');
-            shortText.className = 'short-text';
-            shortText.textContent = item.penalty_description.substring(0, 150) + '...';
-
-            const fullText = document.createElement('span');
-            fullText.className = 'full-text';
-            fullText.style.display = 'none';
-            fullText.textContent = item.penalty_description;
-
-            penaltyButton.appendChild(shortText);
-            penaltyButton.appendChild(fullText);
-            cellPenaltyDescription.appendChild(penaltyButton);
+            penaltyButton.classList.add('description-btn');
+            penaltyButton.innerHTML = `
+                <span class="short-text">${rowData.penalty_description.slice(0, 150)}...</span>
+                <span class="full-text" style="display:none;">${rowData.penalty_description}</span>
+            `;
+            penaltyButton.onclick = () => toggleDescription(penaltyButton);
+            penaltyCell.appendChild(penaltyButton);
         } else {
-            cellPenaltyDescription.textContent = item.penalty_description;
+            penaltyCell.innerText = rowData.penalty_description;
         }
-        row.appendChild(cellPenaltyDescription);
 
-        const cellFineRange = document.createElement('td');
-        cellFineRange.textContent = item.fine_range;
-        row.appendChild(cellFineRange);
+        const fineCell = document.createElement('td');
+        fineCell.innerText = rowData.fine_range;
 
-        const cellJailTimeRange = document.createElement('td');
-        cellJailTimeRange.textContent = item.jail_time_range;
-        row.appendChild(cellJailTimeRange);
+        const jailTimeCell = document.createElement('td');
+        jailTimeCell.innerText = rowData.jail_time_range;
 
-        const cellCodeReference = document.createElement('td');
-        cellCodeReference.textContent = item.code_reference;
-        row.appendChild(cellCodeReference);
+        const codeCell = document.createElement('td');
+        codeCell.innerText = rowData.code_reference;
+
+        const categoryCell = document.createElement('td');
+        categoryCell.innerText = rowData.category;
+
+        row.appendChild(buttonCell);
+        row.appendChild(offenseCell);
+        row.appendChild(penaltyCell);
+        row.appendChild(fineCell);
+        row.appendChild(jailTimeCell);
+        row.appendChild(codeCell);
+        row.appendChild(categoryCell);
 
         tableBody.appendChild(row);
     });
@@ -428,21 +417,25 @@ function hideTable() {
 
 function filterTable() {
     const input = document.getElementById('searchInput').value.toLowerCase();
+    const tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
     const resultsContainer = document.getElementById('resultsContainer');
 
     resultsContainer.innerHTML = '';
     let found = false;
 
-    data.forEach(item => {
-        if (item.offense_description.toLowerCase().includes(input) || item.penalty_description.toLowerCase().includes(input)) {
+    for (let row of tableRows) {
+        const megnevezes = row.getElementsByTagName('td')[1].innerText.toLowerCase();
+        const leiras = row.getElementsByTagName('td')[2].innerText.toLowerCase();
+        if (megnevezes.includes(input) || leiras.includes(input)) {
             found = true;
+            const cells = row.getElementsByTagName('td');
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
-            resultItem.innerText = `${item.code_reference} - ${item.offense_description}`;
-            resultItem.onclick = () => selectRowFromDatabase(item);
+            resultItem.innerText = `${cells[5].innerText} - ${cells[1].innerText}`;
+            resultItem.onclick = () => selectRow(row);
             resultsContainer.appendChild(resultItem);
         }
-    });
+    }
 
     if (input && found) {
         resultsContainer.style.display = 'block';
@@ -467,15 +460,6 @@ function selectRow(row) {
 function selectRowFromButton(button) {
     const row = button.closest('tr');
     selectRow(row);
-}
-
-function selectRowFromDatabase(item) {
-    const rows = document.querySelectorAll('#tableBody tr');
-    rows.forEach(row => {
-        if (row.cells[0].textContent.trim() === item.button_text) {
-            selectRow(row);
-        }
-    });
 }
 
 function toggleOptional() {
@@ -516,7 +500,7 @@ function updateResultBoxes() {
         totalPenaltyMin += penaltyRange[0];
         totalPenaltyMax += penaltyRange[1];
 
-        if (cells[2].innerText !== 'I') {
+        if (cells[6].innerText !== 'I') {
             optionalPenaltyMin += penaltyRange[0];
             optionalPenaltyMax += penaltyRange[1];
         } else {
@@ -552,15 +536,17 @@ function updateResultBoxes() {
 
 function updateResultsContainer() {
     const resultsContainer = document.getElementById('resultsContainer');
+    const tableRows = document.getElementById('tableBody').getElementsByTagName('tr');
     resultsContainer.innerHTML = '';
 
-    data.forEach(item => {
+    for (let row of tableRows) {
+        const cells = row.getElementsByTagName('td');
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
-        resultItem.innerText = `${item.code_reference} - ${item.offense_description}`;
-        resultItem.onclick = () => selectRowFromDatabase(item);
+        resultItem.innerText = `${cells[5].innerText} - ${cells[1].innerText}`;
+        resultItem.onclick = () => selectRow(row);
         resultsContainer.appendChild(resultItem);
-    });
+    }
 }
 
 function toggleSelectedRowsTable() {
@@ -600,8 +586,6 @@ function displaySelectedRowsTable() {
         const clone = row.cloneNode(true);
         clone.classList.remove('selected');
 
-        clone.onclick = null;
-
         const actionCell = document.createElement('td');
         const deleteButton = document.createElement('button');
         deleteButton.innerText = 'Delete';
@@ -612,8 +596,8 @@ function displaySelectedRowsTable() {
         actionCell.appendChild(deleteButton);
         clone.appendChild(actionCell);
 
-        // Remove the button from the § column
-        clone.cells[0].innerHTML = clone.cells[0].textContent;
+        // Remove the button and leave the text in the § column
+        clone.getElementsByTagName('td')[0].innerHTML = clone.getElementsByTagName('td')[0].innerText;
 
         selectedRowsTableBody.appendChild(clone);
     });
@@ -677,3 +661,5 @@ function handleOutsideClick(event) {
         }, 500);
     }
 }
+
+document.addEventListener('DOMContentLoaded', populateTable);

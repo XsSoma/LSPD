@@ -257,6 +257,7 @@ body {
     background: linear-gradient(90deg, #536976, #4d5168) !important;
 }
 
+
 .selected-rows-table-container {
     display: none;
     position: fixed;
