@@ -282,6 +282,12 @@ body {
     border-radius: 15px; /* Rounded corners */
 }
 
+body.blur-active .container-fluid > :not(#selectedRowsTableContainer):not(.result-boxes) {
+    filter: blur(8px);
+    pointer-events: none; /* Disable interactions with blurred elements */
+}
+
+
 .selected-rows-table-container .table {
     border-radius: 15px; /* Ensure corners remain rounded even when scrolling */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.19); /* Shadow around the table */
