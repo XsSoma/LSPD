@@ -594,7 +594,7 @@ function toggleSelectedRowsTable() {
         container.classList.add('fade-out');
         setTimeout(() => {
             container.style.display = 'none';
-            button.innerText = 'Show Selected Rows';
+            button.innerText = 'Kijelölt sorok mutatása';
             container.classList.remove('fade-out');
         }, 500);
         searchTable.classList.add('fade-in');
