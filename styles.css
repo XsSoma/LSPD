@@ -264,10 +264,10 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, 100%);
-    background-color: rgba(0, 0, 0, 0.8);
     border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+    padding: 0; /* Removed padding */
+    width: 90%; /* Made the table wider */
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5); /* Shadow around the table */
     z-index: 1000;
     transition: transform 0.5s ease-in-out;
 }
@@ -279,7 +279,15 @@ body {
 .selected-rows-table-container .table-responsive {
     max-height: 300px;
     overflow-y: auto;
+    border-radius: 15px; /* Rounded corners */
 }
+
+.selected-rows-table-container .table {
+    border-radius: 15px; /* Ensure corners remain rounded even when scrolling */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 6px 20px rgba(0, 0, 0, 0.19); /* Shadow around the table */
+    margin: 0;
+}
+
 
 .deleting {
     opacity: 0;

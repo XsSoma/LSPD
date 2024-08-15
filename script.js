@@ -1,9 +1,4 @@
-let selectedRows = [];
-let includeOptional = true;
-let searchBarClicked = false;
-let isAnimating = false;  // Flag to check if animation is running
-
-const data = [
+const database = [
     { "id": "1", "button_text": "233 §", "offense_description": "Bűncselekményben való asszisztálás", "penalty_description": "Kivéve azokat az eseteket, amikor eltérő büntetést ír elő a törvény, a segítő pénzbírsággal sújtható, amely nem haladhatja meg az ötezer dollárt ($5,000), vagy börtönbüntetéssel az 1170. szakasz (h) bekezdése szerint, vagy megyei börtönben legfeljebb egy évig, vagy mindkét büntetéssel.\t\t", "category": "I", "fine_range": "$5000 - $5000", "jail_time_range": "12-48", "code_reference": "2(33)" },
     { "id": "2", "button_text": "337 §", "offense_description": "Hazaárulás", "penalty_description": "(a) Az állam elleni hazaárulás csak az állam elleni háború indításából, az ellenségeihez való csatlakozásból vagy azok segítéséből és támogatásából áll, és csak az állam iránt hűséggel tartozó személyek által követhető el. A büntetést a 190.3 szakaszszerint kell meghatározni.\t\t", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "240-999", "code_reference": "3(37)" },
     { "id": "3", "button_text": "338 §", "offense_description": "Hazaárulásban való segédkezés", "penalty_description": "A hazaárulás eltitkolása az a cselekmény, amikor valaki tudomást szerez a hazaárulásról, és eltitkolja azt, anélkül hogy egyetértene vagy részt venne a bűncselekményben. \nEz büntethető 16-36 perc börtönbüntetéssel.A hazaárulás eltitkolása az a cselekmény, amikor valaki tudomást szerez a hazaárulásról, és eltitkolja azt, anélkül hogy egyetértene vagy részt venne a bűncselekményben. Ez büntethető az 1170. szakasz (h) bekezdése szerint kiszabott börtönbüntetéssel.\t\t", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "16-36", "code_reference": "3(38)" },
@@ -357,65 +352,33 @@ const data = [
     { "id": "351", "button_text": "1842004.5", "offense_description": "Megjelenés elmulasztása.", "penalty_description": "Bárminemű jogszabálysértés elítélése esetén, kivéve a bűncselekményekkel kapcsolatos eseteket és ezt a szakaszt, a megyei börtönbüntetés végrehajtását a vádlott kérésére 24 órára felfüggeszthetik, ha a bíró nem állapítja meg, hogy a személy nem fog visszatérni. Ha az említett időszak vége előtt a személy nem adja át magát az őrizetbe vétel céljából, akkor a megjelenés elmulasztása bűncselekménynek minősül.", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "5-5", "code_reference": "18(42004.5)" }
 ];
 
+let selectedRows = [];
+let includeOptional = true;
+let searchBarClicked = false;
+
 function populateTable() {
     const tableBody = document.getElementById('tableBody');
     tableBody.innerHTML = '';
-
-    data.forEach(rowData => {
+    database.forEach(data => {
         const row = document.createElement('tr');
-
-        const buttonCell = document.createElement('td');
-        const button = document.createElement('button');
-        button.classList.add('section-btn');
-        button.innerText = rowData.button_text;
-        button.onclick = () => selectRowFromButton(button);
-        buttonCell.appendChild(button);
-
-        const offenseCell = document.createElement('td');
-        offenseCell.innerText = rowData.offense_description;
-
-        const penaltyCell = document.createElement('td');
-        if (rowData.penalty_description.length > 150) {
-            const penaltyButton = document.createElement('button');
-            penaltyButton.classList.add('description-btn');
-            penaltyButton.innerHTML = `
-                <span class="short-text">${rowData.penalty_description.slice(0, 150)}...</span>
-                <span class="full-text" style="display:none;">${rowData.penalty_description}</span>
-            `;
-            penaltyButton.onclick = () => toggleDescription(penaltyButton);
-            penaltyCell.appendChild(penaltyButton);
-        } else {
-            penaltyCell.innerText = rowData.penalty_description;
-        }
-
-        const fineCell = document.createElement('td');
-        fineCell.innerText = rowData.fine_range;
-
-        const jailTimeCell = document.createElement('td');
-        jailTimeCell.innerText = rowData.jail_time_range;
-
-        const codeCell = document.createElement('td');
-        codeCell.innerText = rowData.code_reference;
-
-        const categoryCell = document.createElement('td');
-        categoryCell.innerText = rowData.category;
-
-        row.appendChild(buttonCell);
-        row.appendChild(offenseCell);
-        row.appendChild(penaltyCell);
-        row.appendChild(fineCell);
-        row.appendChild(jailTimeCell);
-        row.appendChild(codeCell);
-        row.appendChild(categoryCell);
-
+        row.innerHTML = `
+            <td><button class="section-btn" onclick="selectRowFromButton(this)">${data.button_text}</button></td>
+            <td>${data.offense_description}</td>
+            <td>
+                ${data.penalty_description.length > 150 ? `<button class="description-btn" onclick="toggleDescription(this)">
+                <span class="short-text">${data.penalty_description.substring(0, 150)}...</span>
+                <span class="full-text" style="display:none;">${data.penalty_description}</span></button>` : data.penalty_description}
+            </td>
+            <td>${data.fine_range}</td>
+            <td>${data.jail_time_range}</td>
+            <td>${data.category}</td>
+            <td>${data.code_reference}</td>
+        `;
         tableBody.appendChild(row);
     });
 }
 
 function showTable() {
-    if (isAnimating) return;  // Prevent showing the table if an animation is ongoing
-    isAnimating = true;
-
     document.getElementById('resultsContainer').style.display = 'block';
     setTimeout(() => {
         document.getElementById('resultsContainer').classList.add('fade-in');
@@ -427,17 +390,11 @@ function showTable() {
         setTimeout(() => {
             searchBarClicked = true;
             document.addEventListener('click', handleOutsideClick);
-            isAnimating = false;  // Reset the animation flag
-        }, 700);
-    } else {
-        isAnimating = false;  // Reset the animation flag
+        }, 700); // Delay to match the animation duration of the search bar
     }
 }
 
 function hideTable() {
-    if (isAnimating) return;  // Prevent hiding the table if an animation is ongoing
-    isAnimating = true;
-
     const searchInput = document.getElementById('searchInput').value.trim();
     if (!searchInput) {
         document.getElementById('resultsContainer').classList.add('fade-out');
@@ -445,10 +402,7 @@ function hideTable() {
             document.getElementById('resultsContainer').classList.remove('show');
             document.getElementById('resultsContainer').style.display = 'none';
             document.getElementById('resultsContainer').classList.remove('fade-out');
-            isAnimating = false;  // Reset the animation flag
         }, 500);
-    } else {
-        isAnimating = false;  // Reset the animation flag
     }
 }
 
@@ -468,7 +422,7 @@ function filterTable() {
             const cells = row.getElementsByTagName('td');
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
-            resultItem.innerText = `${cells[5].innerText} - ${cells[1].innerText}`;
+            resultItem.innerText = `${cells[6].innerText} - ${cells[1].innerText}`;
             resultItem.onclick = () => selectRow(row);
             resultsContainer.appendChild(resultItem);
         }
@@ -520,7 +474,7 @@ function updateResultBoxes() {
             setTimeout(() => {
                 box.style.display = 'none';
                 box.classList.remove('fade-out');
-            }, 1500);
+            }, 1500); // Match the fade-out animation duration
         });
         return;
     }
@@ -537,7 +491,7 @@ function updateResultBoxes() {
         totalPenaltyMin += penaltyRange[0];
         totalPenaltyMax += penaltyRange[1];
 
-        if (cells[6].innerText !== 'I') {
+        if (cells[5].innerText !== 'I') {
             optionalPenaltyMin += penaltyRange[0];
             optionalPenaltyMax += penaltyRange[1];
         } else {
@@ -545,6 +499,7 @@ function updateResultBoxes() {
         }
     });
 
+    // Apply caps
     totalFineMin = Math.min(totalFineMin, 60000);
     totalFineMax = Math.min(totalFineMax, 60000);
     totalPenaltyMin = Math.min(totalPenaltyMin, 60);
@@ -579,7 +534,7 @@ function updateResultsContainer() {
         const cells = row.getElementsByTagName('td');
         const resultItem = document.createElement('div');
         resultItem.className = 'result-item';
-        resultItem.innerText = `${cells[5].innerText} - ${cells[1].innerText}`;
+        resultItem.innerText = `${cells[6].innerText} - ${cells[1].innerText}`;
         resultItem.onclick = () => selectRow(row);
         resultsContainer.appendChild(resultItem);
     }
@@ -594,7 +549,7 @@ function toggleSelectedRowsTable() {
         container.classList.add('fade-out');
         setTimeout(() => {
             container.style.display = 'none';
-            button.innerText = 'Kijelölt sorok mutatása';
+            button.innerText = 'Show Selected Rows';
             container.classList.remove('fade-out');
         }, 500);
         searchTable.classList.add('fade-in');
@@ -611,7 +566,7 @@ function toggleSelectedRowsTable() {
             container.classList.add('show');
             container.classList.add('fade-in');
         }, 10);
-        button.innerText = 'Kijelölt sorok eltüntetése';
+        button.innerText = 'Hide Selected Rows';
     }
 }
 
@@ -619,21 +574,18 @@ function displaySelectedRowsTable() {
     const selectedRowsTableBody = document.getElementById('selectedRowsTableBody');
     selectedRowsTableBody.innerHTML = '';
     selectedRows.forEach((row, index) => {
-        const clone = row.cloneNode(true);
-        clone.classList.remove('selected');
-
-        const actionCell = document.createElement('td');
-        const deleteButton = document.createElement('button');
-        deleteButton.innerText = 'Delete';
-        deleteButton.className = 'btn btn-danger btn-sm delete-btn';
-        deleteButton.onclick = () => {
-            removeRowFromSelection(index, clone);
-        };
-        actionCell.appendChild(deleteButton);
-        clone.appendChild(actionCell);
-
-        clone.getElementsByTagName('td')[0].innerHTML = clone.getElementsByTagName('td')[0].innerText;
-
+        const cells = row.getElementsByTagName('td');
+        const clone = document.createElement('tr');
+        clone.innerHTML = `
+            <td>${cells[0].innerText}</td>
+            <td>${cells[1].innerText}</td>
+            <td>${cells[2].innerHTML}</td>
+            <td>${cells[3].innerText}</td>
+            <td>${cells[4].innerText}</td>
+            <td>${cells[5].innerText}</td>
+            <td>${cells[6].innerText}</td>
+            <td><button class="btn btn-danger btn-sm delete-btn" onclick="removeRowFromSelection(${index}, this)">Delete</button></td>
+        `;
         selectedRowsTableBody.appendChild(clone);
     });
 
@@ -643,7 +595,8 @@ function displaySelectedRowsTable() {
     }
 }
 
-function removeRowFromSelection(index, rowElement) {
+function removeRowFromSelection(index, button) {
+    const rowElement = button.closest('tr');
     const originalRow = selectedRows[index];
     rowElement.classList.add('deleting');
     setTimeout(() => {
@@ -654,13 +607,13 @@ function removeRowFromSelection(index, rowElement) {
             document.getElementById('selectedRowsTableContainer').style.display = 'none';
             document.getElementById('toggleTableButton').innerText = 'Show Selected Rows';
         }
-        originalRow.classList.remove('selected');
+        originalRow.classList.remove('selected'); // Remove highlight from the original row in the search table
         displaySelectedRowsTable();
     }, 300);
 }
 
 function copyToClipboard() {
-    const text = selectedRows.map(row => row.getElementsByTagName('td')[5].innerText).join(', ');
+    const text = selectedRows.map(row => row.getElementsByTagName('td')[6].innerText).join(', ');
     navigator.clipboard.writeText(text).then(() => {
         alert('Copied to clipboard: ' + text);
     });
@@ -684,7 +637,7 @@ function handleOutsideClick(event) {
     const searchTable = document.getElementById('searchTable');
 
     if (!searchInput.contains(event.target) && !resultsContainer.contains(event.target)) {
-        searchInput.value = '';
+        searchInput.value = ''; // Clear the search input
         hideTable();
         searchTable.classList.add('fade-in');
         searchTable.classList.add('show');
@@ -697,4 +650,5 @@ function handleOutsideClick(event) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', populateTable);
+// Initial population of the table
+populateTable();
