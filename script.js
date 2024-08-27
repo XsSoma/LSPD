@@ -356,6 +356,7 @@ const database = [
     { "id": "349", "button_text": "12C-27151", "offense_description": "A módosított kipufogóból származó, zajhatárértéket meghaladó zaj generálása.", "penalty_description": "(a) Tilos a motor jármű kipufogórendszerét olyan módon módosítani, amely fokozza vagy növeli a motor által kibocsátott zajt úgy, hogy a jármű nem felel meg a 27150. szakasz rendelkezéseinek, vagy túllépi az Article 2.5 (27200. szakasztól kezdődő) zajhatárokat. Tilos olyan motor járművet üzemeltetni, amelynek kipufogórendszere így módosítva van.\r\n\r\n(b) Az 6000 fontnál kisebb gyártói össztömegű motor járművek kipufogórendszereinek esetében, a zajszint 95 dbA vagy annál kevesebb, ha a legfrissebb SAE International szabvány szerint tesztelték, megfelel ennek a szakasznak. A motor járművek kipufogórendszerei vagy annak bármely része, ideértve a nem eredeti kipufogó berendezéseket is.\r\n\r\n(c) Senki sem módosíthatja egy gépjármű kipufogórendszerét olyan módon, hogy a motor által kibocsátott zaj megnövekedjen vagy felerősödjön, és így a jármű nem felel meg a 27150. szakasz előírásainak, vagy meghaladja a járműtípusra vonatkozó zajhatárértékeket. Továbbá tilos olyan járművet üzemeltetni, amelynek kipufogórendszere ilyen módon módosított.", "category": "-", "fine_range": "$0 - $1000", "jail_time_range": "0-0", "code_reference": "12(C-27151)" },
     { "id": "350", "button_text": "125-27315", "offense_description": "Biztonsági öv elmulasztása", "penalty_description": "(a) (1) Minden jármű vezetőjének és az első ülésen ülő utasainak kötelessége, hogy biztonsági övet viseljenek, amikor a jármű mozog. Az ülések hátulján ülő utasok számára is kötelező a biztonsági öv használata, ha az autóban felszerelt biztonsági övek állnak rendelkezésre.\r\n\r\n(2) Ha egy személy nem visel biztonsági övet, amikor az első ülésen ül, az alábbi szankciók vonatkoznak rá:\r\n\r\n(A) A szabálysértés első alkalommal történő elkövetése esetén a bírság 20 dollár, ha a vezető vagy utas a bírságot azonnal, a rendőrségi bírságot követő 60 napon belül befizeti.\r\n\r\n(B) Ha a bírságot a megadott időn belül nem fizetik be, akkor az összeg 40 dollárra emelkedhet.\r\n\r\n(3) A szabálysértés második vagy további alkalommal történő elkövetése esetén a bírság a következőképpen alakul:\r\n\r\n(A) A második alkalommal a bírság 50 dollár.\r\n\r\n(B) A harmadik és további alkalommal a bírság 100 dollár.\r\n\r\n(4) Az első ülésen ülő utasok, akik nem viselnek biztonsági övet, nem tekinthetők felelősnek, ha az utasok, akik az első ülésen ülnek, nem viselnek biztonsági övet.\r\n\r\n(b) (1) Ha egy vezető nem biztosítja, hogy az utasai a hátsó üléseken használják a biztonsági övet, az alábbiak szerint büntethető:\r\n\r\n(A) A szabálysértés első alkalommal történő elkövetése esetén a bírság 20 dollár.\r\n\r\n(B) Ha a bírságot nem fizetik be időben, az összeg 40 dollárra emelkedhet.\r\n\r\n(2) A hátsó üléseken ülő utasok biztonsági öv használatának elmulasztása második vagy további alkalommal történő elkövetése esetén a bírság a következőképpen alakul:\r\n\r\n(A) A második alkalommal a bírság 50 dollár.\r\n\r\n(B) A harmadik és további alkalommal a bírság 100 dollár.\r\n\r\n(c) A szabálysértésre vonatkozó egyéb rendelkezések, például a bírságok és a pontok hozzáadása a járművezetői engedélyhez, valamint az egyéb előírások az egyes államok törvényei szerint változhatnak.\r\n\r\nEz a törvény célja a közúti biztonság növelése és a balesetek számának csökkentése azáltal, hogy biztosítja, hogy minden utas és vezető használja a biztonsági övet.", "category": "-", "fine_range": "$20 - $100", "jail_time_range": "0-0", "code_reference": "12(5-27315)" },
     { "id": "351", "button_text": "1842004.5", "offense_description": "Megjelenés elmulasztása.", "penalty_description": "Bárminemű jogszabálysértés elítélése esetén, kivéve a bűncselekményekkel kapcsolatos eseteket és ezt a szakaszt, a megyei börtönbüntetés végrehajtását a vádlott kérésére 24 órára felfüggeszthetik, ha a bíró nem állapítja meg, hogy a személy nem fog visszatérni. Ha az említett időszak vége előtt a személy nem adja át magát az őrizetbe vétel céljából, akkor a megjelenés elmulasztása bűncselekménynek minősül.", "category": "-", "fine_range": "$0 - $0", "jail_time_range": "5-5", "code_reference": "18(42004.5)" }
+
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -380,6 +381,17 @@ function populateTable() {
 }
 
 function showTable() {
+    const searchTable = document.getElementById('searchTable');
+    
+    // Check if the searchTable is visible and hide it if true
+    if (searchTable.classList.contains('show')) {
+        searchTable.classList.add('fade-out');
+        setTimeout(() => {
+            searchTable.classList.remove('show');
+            searchTable.classList.remove('fade-out');
+        }, 500); // Matches the animation duration
+    }
+
     document.getElementById('resultsContainer').style.display = 'block';
     setTimeout(() => {
         document.getElementById('resultsContainer').classList.add('fade-in');
@@ -391,7 +403,7 @@ function showTable() {
         setTimeout(() => {
             searchBarClicked = true;
             document.addEventListener('click', handleOutsideClick);
-        }, 700); 
+        }, 700); // Delay to match the animation duration of the search bar
     }
 }
 
